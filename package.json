@@ -1,0 +1,26 @@
+{
+  "name": "baseball-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/**/*.js",
+    "start": "node src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bohyeon-n/baseball-game.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bohyeon-n/baseball-game/issues"
+  },
+  "homepage": "https://github.com/bohyeon-n/baseball-game#readme",
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.18.2"
+  }
+}
