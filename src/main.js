@@ -1,4 +1,6 @@
-const BaseballGame = require('./game.js')
+const {
+  BaseballGame
+} = require('./game.js')
 const {
   Team
 } = require('./team.js')
@@ -8,11 +10,12 @@ const {
 } = require("./userInput.js")
 
 function main() {
-  // const game = new BaseballGame.BaseballGame()
-  // game.start()
   const userInput = new UserInput()
   const team1 = new Team(1, userInput)
-  team1.setTeam()
+  const team2 = new Team(2, userInput)
+  const baseballGame = new BaseballGame(team1, team2, userInput)
+  baseballGame.start()
 }
+
 
 main()
