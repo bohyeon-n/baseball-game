@@ -135,8 +135,20 @@ class BaseballGame {
       isNextPlayerTurn = this.isNextPlayerTurn(teamScore, result)
       !isNextPlayerTurn && this.printScore(teamScore)
     }
+    const accResult = this.getAccBallAndStrikeResult(teamScore)
+    accResult && console.log(this.resultToKorean(accResult))
     teamScore.resetPreScore()
     this.printScore(teamScore)
+  }
+
+  getAccBallAndStrikeResult(teamScore) {
+    if (teamScore.ball === 4) {
+      return 'safety'
+    }
+    if (teamScore.strike === 3) {
+      return 'out'
+    }
+    return null
   }
 
   printResult(result) {
