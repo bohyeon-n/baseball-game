@@ -39,7 +39,7 @@ class BaseballGame {
         this.printTeamsInfo()
         break
       case '3':
-        this.math()
+        this.match()
         break
       default:
         console.log('메뉴를 잘못 선택하셨습니다.')
@@ -86,7 +86,7 @@ class BaseballGame {
     }
   }
 
-  math() {
+  match() {
     const matchStartMessage = `${this.team1.teamName} VS ${this.team2.teamName}의 시합을 시작합니다.`
     console.log(matchStartMessage)
     for (let i = 0; i < 9; i++) {
