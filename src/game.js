@@ -95,6 +95,10 @@ class BaseballGame {
       this.offense(this.team1, this.team1Score, i + 1, 'top')
       // 말 공격
       this.offense(this.team2, this.team2Score, i + 1, 'bottom')
+      this.team1Score.updateInningPoint()
+      this.team2Score.updateInningPoint()
+      this.team1Score.resetPreInningScore()
+      this.team2Score.resetPreInningScore()
     }
     const matchResultString = `경기 종료 \n${this.getMathResultString()} \nThank you!`
     console.log(matchResultString)
@@ -137,7 +141,7 @@ class BaseballGame {
     }
     const accResult = this.getAccBallAndStrikeResult(teamScore)
     accResult && console.log(this.resultToKorean(accResult))
-    teamScore.resetPreScore()
+    teamScore.resetPrePlayerScore()
     this.printScore(teamScore)
   }
 
@@ -165,23 +169,8 @@ class BaseballGame {
     )
   }
 
-  resetPrePlayerScore() {
-    this.ball = 0
-    this.strike = 0
-  }
-
   isGameOver() {
     return this.out === 3
-  }
-
-  updateScore(teamScore, result) {
-    teamScore[result]++
-    if (teamScore.strike === 3) {
-      teamScore.out++
-    }
-    if (teamScore.ball === 4) {
-      teamScore.safety++
-    }
   }
 
   getScoreString(teamScore) {

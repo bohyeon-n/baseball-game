@@ -15,9 +15,18 @@ class Score {
     this.point = 0
   }
 
-  resetPreScore() {
+  resetPrePlayerScore() {
     this.ball = 0
     this.strike = 0
+  }
+
+  updateInningPoint() {
+    this.point += this.calcPoint()
+  }
+
+  resetPreInningScore() {
+    this.safety = 0
+    this.out = 0
   }
 
   updateScore(result) {
@@ -28,7 +37,6 @@ class Score {
     if (this.ball === 4) {
       this.safety++
     }
-    this.point = this.calcPoint()
   }
 
   calcPoint() {
