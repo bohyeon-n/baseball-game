@@ -173,10 +173,6 @@ class BaseballGame {
     )
   }
 
-  isGameOver() {
-    return this.out === 3
-  }
-
   getScoreString(teamScore) {
     return `${teamScore.strike}S ${teamScore.ball}B ${teamScore.out}O`
   }
