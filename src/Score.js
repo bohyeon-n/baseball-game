@@ -36,9 +36,13 @@ class Score {
     this[result]++
     if (this.strike === 3) {
       this.out++
+      this.accStrikeout++
     }
     if (this.ball === 4) {
       this.safety++
+    }
+    if (result === 'safety') {
+      this.accSafety++
     }
   }
 

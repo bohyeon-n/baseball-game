@@ -101,6 +101,10 @@ class BaseballGame {
   }
 
   updateScoreAfterInning() {
+    this.scores.push({
+      team1Point: this.team1Score.calcPoint(),
+      team2Point: this.team2Score.calcPoint()
+    })
     this.team1Score.updateInningPoint()
     this.team2Score.updateInningPoint()
     this.team1Score.resetPreInningScore()
@@ -141,6 +145,7 @@ class BaseballGame {
       teamScore.updateScore(result)
       isNextPlayerTurn = this.isNextPlayerTurn(teamScore, result)
       !isNextPlayerTurn && this.printScore(teamScore)
+      teamScore.pitchCount++
     }
     const accResult = this.getAccBallAndStrikeResult(teamScore)
     accResult && console.log(this.resultToKorean(accResult))
