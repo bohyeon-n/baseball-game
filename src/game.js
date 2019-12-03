@@ -95,13 +95,17 @@ class BaseballGame {
       this.offense(this.team1, this.team1Score, i + 1, 'top')
       // 말 공격
       this.offense(this.team2, this.team2Score, i + 1, 'bottom')
-      this.team1Score.updateInningPoint()
-      this.team2Score.updateInningPoint()
-      this.team1Score.resetPreInningScore()
-      this.team2Score.resetPreInningScore()
+      this.updateScoreAfterInning()
     }
     const matchResultString = `경기 종료 \n${this.getMathResultString()} \nThank you!`
     console.log(matchResultString)
+  }
+
+  updateScoreAfterInning() {
+    this.team1Score.updateInningPoint()
+    this.team2Score.updateInningPoint()
+    this.team1Score.resetPreInningScore()
+    this.team2Score.resetPreInningScore()
   }
 
   getMathResultString() {
