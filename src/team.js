@@ -40,8 +40,8 @@ class Team {
       const playerInput = await this.input.question(`${turn}번 타자 정보 입력>`)
       const splitedInput = playerInput.split(',').map(word => word.trim())
       const [name, battingAverage] = splitedInput
-      if (this.isValidPlayerInput(name, battingAverage)) {
-        player = { name, battingAverage }
+      if (this.isValidPlayerInput(name, Number(battingAverage))) {
+        player = { name, battingAverage: Number(battingAverage) }
       }
     }
     return player
