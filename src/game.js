@@ -1,19 +1,12 @@
 class BaseballGame {
-  constructor(team1, team2, userInput) {
-    this.ball = 0
-    this.strike = 0
-    this.out = 0
-    this.safety = 0
+  constructor(team1, team2, team1Score, team2Score, userInput) {
+    this.team1Score = team1Score
+    this.team2Score = team2Score
     this.team1 = team1
     this.team2 = team2
     this.userInput = userInput
-  }
-
-  _init() {
-    this.ball = 0
-    this.strike = 0
-    this.safety = 0
-    this.out = 0
+    this.inning = 1
+    this.offenseTeam = 1
   }
 
   async setTeams() {
@@ -27,8 +20,7 @@ class BaseballGame {
   }
 
   getMenu(isAbleMathStart) {
-    let menu = `
-    신나는 야구시합
+    let menu = `신나는 야구시합
     1. 데이터 입력
     2. 데이터 출력
     `
@@ -88,39 +80,74 @@ class BaseballGame {
   }
 
   async start() {
-    this._init()
     this.userInput.open()
-    while (true) {
+    let open = false
+    while (!open) {
       await this.openMenu()
     }
   }
 
   math() {
-    console.log(`신나는 야구 게임! \n첫 번 째 타자가 타석에 입장했습니다. \n`)
-    while (!this.isGameOver()) {
-      this.play()
+    const matchStartMessage = `${this.team1.teamName} VS ${this.team2.teamName}의 시합을 시작합니다.`
+    console.log(matchStartMessage)
+    for (let i = 0; i < 9; i++) {
+      // 초 공격
+      this.offense(this.team1, this.team1Score, i + 1, 'top')
+      // 말 공격
+      this.offense(this.team2, this.team2Score, i + 1, 'bottom')
     }
-    console.log(`최종 안타수: ${this.safety} \nGAME OVER`)
+    const matchResultString = `경기 종료 \n${this.getMathResultString()} \nThank you!`
+    console.log(matchResultString)
   }
 
-  play() {
-    const result = this.getRandomResult()
-    this.updateScore(result)
-    const isNextPlayerTurn = this.isNextPlayerTurn(result)
-    if (isNextPlayerTurn || this.out === 3) {
-      this.resetPrePlayerScore()
-    }
-    const scoreResultString = this.getResultString(result, isNextPlayerTurn)
-    this.printScore(scoreResultString)
+  getMathResultString() {
+    return `${this.team1.teamName} VS ${this.team2.teamName}
+    ${this.team1Score.point} : ${this.team2Score.point}`
   }
 
-  isNextPlayerTurn(result) {
+  // 팀 한 번 공격하기
+  offense(team, teamScore, inning, topOrBottom) {
+    let isChangeOffenseTeam = false
+    let playerNumber = 1
+    while (!isChangeOffenseTeam) {
+      console.log(
+        `${inning} ${topOrBottom === 'top' ? '초' : '말'} ${team.teamName} 공격
+        `
+      )
+      while (!isChangeOffenseTeam) {
+        this.runPlayer(team.players[playerNumber - 1], teamScore)
+        playerNumber > 1 ? 1 : playerNumber++
+        playerNumber = 1
+        isChangeOffenseTeam = teamScore.out >= 3
+      }
+    }
+  }
+
+  runPlayer(player, teamScore) {
+    console.log(`${player.turn}번 ${player.name}`)
+    let isNextPlayerTurn = false
+    while (!isNextPlayerTurn) {
+      const result = this.getRandomResult()
+      this.printResult(result)
+      teamScore.updateScore(result)
+      isNextPlayerTurn = this.isNextPlayerTurn(teamScore, result)
+      !isNextPlayerTurn && this.printScore(teamScore)
+    }
+    teamScore.resetPreScore()
+    this.printScore(teamScore)
+  }
+
+  printResult(result) {
+    const resultInKorean = this.resultToKorean(result)
+    console.log(`${resultInKorean} ! `)
+  }
+
+  isNextPlayerTurn(teamScore, result) {
     return (
-      this.out < 3 &&
-      (this.ball === 4 ||
-        this.strike === 3 ||
-        result === 'safety' ||
-        result === 'out')
+      teamScore.ball === 4 ||
+      teamScore.strike === 3 ||
+      result === 'safety' ||
+      result === 'out'
     )
   }
 
@@ -133,34 +160,24 @@ class BaseballGame {
     return this.out === 3
   }
 
-  updateScore(result) {
-    this[result]++
-    if (this.strike === 3) {
-      this.out++
+  updateScore(teamScore, result) {
+    teamScore[result]++
+    if (teamScore.strike === 3) {
+      teamScore.out++
     }
-    if (this.ball === 4) {
-      this.safety++
+    if (teamScore.ball === 4) {
+      teamScore.safety++
     }
   }
 
-  getResultString(result, isNextPlayerTurn) {
-    const resultInKorean = this.resultToKorean(result)
-    let resultScoreString = `${resultInKorean} ! `
-    if (isNextPlayerTurn && (result === 'safety' || result === 'out')) {
-      resultScoreString += '다음 타자가 타석에 입장했습니다.'
-    } else if (isNextPlayerTurn) {
-      resultScoreString += `\n${
-        this.ball === 4 ? '안타' : '아웃'
-      } ! 다음 타자가 타석에 입장했습니다.`
-    } else if (this.out === 3 && result !== 'out') {
-      resultScoreString += '\n아웃 !'
-    }
-    resultScoreString += `\n${this.strike}S ${this.ball}B ${this.out}O`
-    return `\n${resultScoreString}\n`
+  getScoreString(teamScore) {
+    return `${teamScore.strike}S ${teamScore.ball}B ${teamScore.out}O`
   }
 
-  printScore(scoreResult) {
-    console.log(scoreResult)
+  printScore(teamScore) {
+    const teamScoreString = this.getScoreString(teamScore)
+    console.log(`${teamScoreString}
+    `)
   }
 
   resultToKorean(result) {
