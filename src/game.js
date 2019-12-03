@@ -120,15 +120,13 @@ class BaseballGame {
   offense(team, teamScore, inning, topOrBottom) {
     let isChangeOffenseTeam = false
     let playerNumber = 1
+    console.log(
+      `${inning} ${topOrBottom === 'top' ? '초' : '말'} ${team.teamName} 공격`
+    )
     while (!isChangeOffenseTeam) {
-      console.log(
-        `${inning} ${topOrBottom === 'top' ? '초' : '말'} ${team.teamName} 공격`
-      )
-      while (!isChangeOffenseTeam) {
-        this.runPlayer(team.players[playerNumber - 1], teamScore)
-        playerNumber = this.getNextPlayer(team.players.length, playerNumber)
-        isChangeOffenseTeam = teamScore.out >= 3
-      }
+      this.runPlayer(team.players[playerNumber - 1], teamScore)
+      playerNumber = this.getNextPlayer(team.players.length, playerNumber)
+      isChangeOffenseTeam = teamScore.out >= 3
     }
   }
 
