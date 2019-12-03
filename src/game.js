@@ -5,8 +5,7 @@ class BaseballGame {
     this.team1 = team1
     this.team2 = team2
     this.userInput = userInput
-    this.inning = 1
-    this.offenseTeam = 1
+    this.scores = []
   }
 
   async setTeams() {

@@ -5,6 +5,9 @@ class Score {
     this.out = 0
     this.safety = 0
     this.point = 0
+    this.accSafety = 0
+    this.accStrikeout = 0
+    this.pitchCount = 0
   }
 
   resetScore() {
