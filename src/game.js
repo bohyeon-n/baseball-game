@@ -127,7 +127,7 @@ class BaseballGame {
     console.log(`${player.turn}번 ${player.name}`)
     let isNextPlayerTurn = false
     while (!isNextPlayerTurn) {
-      const result = this.getRandomResult()
+      const result = this.getRandomResult(player.battingAverage)
       this.printResult(result)
       teamScore.updateScore(result)
       isNextPlayerTurn = this.isNextPlayerTurn(teamScore, result)
@@ -193,10 +193,31 @@ class BaseballGame {
     }
   }
 
-  getRandomResult() {
+  getRandomResult(h) {
     const results = ['ball', 'strike', 'out', 'safety']
-    const randomNumber = Math.floor(Math.random() * 4)
-    return results[randomNumber]
+    const ballAndStrikeWeight = (1 - h) / (2 - 0.05)
+    const safetyWeight = h
+    const outWegith = 0.1
+    const weight = [
+      ballAndStrikeWeight,
+      ballAndStrikeWeight,
+      outWegith,
+      safetyWeight
+    ]
+    const weightedList = this.generateWeightedList(results, weight)
+    const randomNumber = Math.floor(Math.random() * weightedList.length)
+    return weightedList[randomNumber]
+  }
+
+  generateWeightedList(list, weight) {
+    const weightedList = []
+    for (let i = 0; i < list.length; i++) {
+      const multiple = Math.floor(weight[i] * 100)
+      const multiplelist = new Array(multiple).fill(list[i])
+      weightedList.push(...multiplelist)
+    }
+    return weightedList
   }
 }
+
 exports.BaseballGame = BaseballGame
