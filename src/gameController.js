@@ -1,9 +1,10 @@
 class GameController {
-  constructor(game, userInput) {
+  constructor(game, userInput, scoreboard) {
     this.game = game
     this.userInput = userInput
     this.skip = false
     this.skipNumber = null
+    this.scoreboard = scoreboard
   }
 
   start() {
@@ -72,14 +73,18 @@ class GameController {
     !this.skip &&
       console.log(`\n${inning} ${isTop ? '초' : '말'} ${team.teamName} 공격\n`)
     while (!isChangeOffenseTeam) {
-      await this.runPlayer(team.players[playerNumber - 1], teamScore)
+      await this.runPlayer(
+        team.players[playerNumber - 1],
+        teamScore,
+        playerNumber,
+        isTop
+      )
       playerNumber = this.getNextPlayer(team.players.length, playerNumber)
       isChangeOffenseTeam = teamScore.out >= 3
     }
-    teamScore.resetPreInningScore()
-  }
+    this.game.updateScoreAfterInning(inning, isTop)  }
 
-  async runPlayer(player, teamScore) {
+  async runPlayer(player, teamScore, playerNumber, isTop) {
     !this.skip && (await this.askSkip())
     !this.skip && console.log(`${player.turn}번 ${player.name}`)
     let isNextPlayerTurn = false
@@ -88,13 +93,18 @@ class GameController {
       const result = this.game.throwBall(teamScore, player, this.skip)
       isNextPlayerTurn = this.game.isNextPlayerTurn(teamScore, result)
       !this.skip && !isNextPlayerTurn && this.printScore(teamScore)
+      !isNextPlayerTurn &&
+        !this.skip &&
+        this.scoreboard.print(this.game.scores, playerNumber, isTop)
       !isNextPlayerTurn && !this.skip && (await this.askSkip())
       if (this.skip) {
         break
       }
     }
     this.game.processAfterRunPlayer(teamScore, this.skip)
+    !this.skip && this.scoreboard.print(this.game.scores, playerNumber, isTop)
     !this.skip && this.printScore(teamScore)
+
     teamScore.resetPlayerScore()
   }
 

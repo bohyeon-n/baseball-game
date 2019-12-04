@@ -10,6 +10,18 @@ class BaseballGame {
   async setTeams() {
     await this.team1.setTeam()
     await this.team2.setTeam()
+    this.initScores()
+  }
+
+  initScores() {
+    const scores = []
+    for (let i = 0; i < 6; i++) {
+      scores.push({
+        team1Point: 0,
+        team2Point: 0
+      })
+    }
+    this.scores = scores
   }
 
   async printTeamsInfo() {
@@ -44,15 +56,16 @@ class BaseballGame {
     teamScore.resetPlayerScore()
   }
 
-  updateScoreAfterInning() {
-    this.scores.push({
-      team1Point: this.team1Score.calcPoint(),
-      team2Point: this.team2Score.calcPoint()
-    })
-    this.team1Score.updateInningPoint()
-    this.team2Score.updateInningPoint()
-    this.team1Score.resetPreInningScore()
-    this.team2Score.resetPreInningScore()
+  updateScoreAfterInning(innging, isTop) {
+    if(isTop) {
+      this.scores[innging - 1].team1Point = this.team1Score.calcPoint()
+      this.team1Score.updateInningPoint()
+      this.team1Score.resetPreInningScore()
+    }else {
+      this.scores[innging - 1].team2Point = this.team2Score.calcPoint()
+      this.team2Score.updateInningPoint()
+      this.team2Score.resetPreInningScore()
+    }
   }
 
   getMathResultString() {
