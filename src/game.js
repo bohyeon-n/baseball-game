@@ -42,26 +42,23 @@ class BaseballGame {
     }
   }
 
-  throwBall(teamScore, player, skip) {
+  throwBall(teamScore, player) {
     const result = this.getRandomResult(player.battingAverage)
-    !skip && this.printResult(result)
     teamScore.updateScore(result)
     teamScore.pitchCount++
     return result
   }
 
-  processAfterRunPlayer(teamScore, skip) {
-    const accResult = this.getAccBallAndStrikeResult(teamScore)
-    !skip && accResult && console.log(this.resultToKorean(accResult))
+  processAfterRunPlayer(teamScore) {
     teamScore.resetPlayerScore()
   }
 
   updateScoreAfterInning(innging, isTop) {
-    if(isTop) {
+    if (isTop) {
       this.scores[innging - 1].team1Point = this.team1Score.calcPoint()
       this.team1Score.updateInningPoint()
       this.team1Score.resetPreInningScore()
-    }else {
+    } else {
       this.scores[innging - 1].team2Point = this.team2Score.calcPoint()
       this.team2Score.updateInningPoint()
       this.team2Score.resetPreInningScore()
