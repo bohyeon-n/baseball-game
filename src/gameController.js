@@ -138,6 +138,10 @@ class GameController {
         this.skip = true
         this.skipNumber = Number(res)
         answer = true
+      } else {
+        console.log(
+          `잘못 입력하셨습니다. ${inningCount}보다 크고 6보다 작은 수를 입력해야 합니다.`
+        )
       }
     }
   }
