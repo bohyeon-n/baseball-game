@@ -90,7 +90,7 @@ class BaseballGame {
   math() {
     const matchStartMessage = `${this.team1.teamName} VS ${this.team2.teamName}의 시합을 시작합니다.`
     console.log(matchStartMessage)
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 6; i++) {
       // 초 공격
       this.offense(this.team1, this.team1Score, i + 1, 'top')
       // 말 공격
