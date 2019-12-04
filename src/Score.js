@@ -18,7 +18,7 @@ class Score {
     this.point = 0
   }
 
-  resetPrePlayerScore() {
+  resetPlayerScore() {
     this.ball = 0
     this.strike = 0
   }

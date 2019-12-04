@@ -30,18 +30,18 @@ class BaseballGame {
     }
   }
 
-  throwBall(teamScore, player) {
+  throwBall(teamScore, player, skip) {
     const result = this.getRandomResult(player.battingAverage)
-    this.printResult(result)
+    !skip && this.printResult(result)
     teamScore.updateScore(result)
     teamScore.pitchCount++
     return result
   }
 
-  processAfterRunPlayer(teamScore) {
+  processAfterRunPlayer(teamScore, skip) {
     const accResult = this.getAccBallAndStrikeResult(teamScore)
-    accResult && console.log(this.resultToKorean(accResult))
-    teamScore.resetPrePlayerScore()
+    !skip && accResult && console.log(this.resultToKorean(accResult))
+    teamScore.resetPlayerScore()
   }
 
   updateScoreAfterInning() {

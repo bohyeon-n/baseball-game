@@ -2,6 +2,8 @@ class GameController {
   constructor(game, userInput) {
     this.game = game
     this.userInput = userInput
+    this.skip = false
+    this.skipNumber = null
   }
 
   start() {
@@ -50,40 +52,64 @@ class GameController {
     }
   }
 
-  matchStart() {
+  async matchStart() {
     const { team1, team2, team1Score, team2Score } = this.game.getGameInfo()
     console.log(`${team1.teamName} VS ${team2.teamName}의 시합을 시작합니다.`)
     let i = 0
     while (i < 6) {
-      this.teamOffenseStart(team1, team1Score, i + 1, true)
-      this.teamOffenseStart(team2, team2Score, i + 1, false)
+      await this.teamOffenseStart(team1, team1Score, i + 1, true)
+      await this.teamOffenseStart(team2, team2Score, i + 1, false)
       i++
     }
   }
 
-  teamOffenseStart(team, teamScore, inning, isTop) {
+  async teamOffenseStart(team, teamScore, inning, isTop) {
     let isChangeOffenseTeam = false
     let playerNumber = 1
-    console.log(
-      `${inning} ${isTop === 'top' ? '초' : '말'} ${team.teamName} 공격`
-    )
+    if (this.skip) {
+      this.skip = inning <= this.skipNumber
+    }
+    !this.skip &&
+      console.log(`\n${inning} ${isTop ? '초' : '말'} ${team.teamName} 공격\n`)
     while (!isChangeOffenseTeam) {
-      this.runPlayer(team.players[playerNumber - 1], teamScore)
+      await this.runPlayer(team.players[playerNumber - 1], teamScore)
       playerNumber = this.getNextPlayer(team.players.length, playerNumber)
       isChangeOffenseTeam = teamScore.out >= 3
     }
+    teamScore.resetPreInningScore()
   }
 
-  runPlayer(player, teamScore) {
-    console.log(`${player.turn}번 ${player.name}`)
+  async runPlayer(player, teamScore) {
+    !this.skip && (await this.askSkip())
+    !this.skip && console.log(`${player.turn}번 ${player.name}`)
     let isNextPlayerTurn = false
     while (!isNextPlayerTurn) {
-      const result = this.game.throwBall(teamScore, player)
+      // 공던짐
+      const result = this.game.throwBall(teamScore, player, this.skip)
       isNextPlayerTurn = this.game.isNextPlayerTurn(teamScore, result)
-      !isNextPlayerTurn && this.printScore(teamScore)
+      !this.skip && !isNextPlayerTurn && this.printScore(teamScore)
+      !isNextPlayerTurn && !this.skip && (await this.askSkip())
+      if (this.skip) {
+        break
+      }
     }
-    this.printScore(teamScore)
-    this.game.processAfterRunPlayer(teamScore)
+    this.game.processAfterRunPlayer(teamScore, this.skip)
+    !this.skip && this.printScore(teamScore)
+    teamScore.resetPlayerScore()
+  }
+
+  async askSkip() {
+    if (!this.skip) {
+      const res = await this.userInput.question(
+        `\n다음 투구 보기(enter) or 스킵하고 X회말 후 투구보기(숫자+enter) ?\n`
+      )
+      if (res === '') {
+        // ??
+      } else {
+        this.skip = true
+        this.skipNumber = Number(res)
+      }
+    }
   }
 
   getNextPlayer(playerCount, currentPlayer) {
