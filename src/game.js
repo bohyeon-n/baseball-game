@@ -49,10 +49,6 @@ class BaseballGame {
     return result
   }
 
-  processAfterRunPlayer(teamScore) {
-    teamScore.resetPlayerScore()
-  }
-
   updateScoreAfterInning(innging, isTop) {
     if (isTop) {
       this.scores[innging - 1].team1Point = this.team1Score.calcPoint()

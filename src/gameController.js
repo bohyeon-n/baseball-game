@@ -60,8 +60,19 @@ class GameController {
     while (i < 6) {
       await this.teamOffenseStart(team1, team1Score, i + 1, true)
       await this.teamOffenseStart(team2, team2Score, i + 1, false)
+      const isTeam1winner = team1Score.point > team2Score.point
+      if (i === 5 && isTeam1winner) {
+        break
+      }
       i++
     }
+    console.log(
+      `경기 종료
+      ${team1.teamName} VS ${team2.teamName}
+      ${team1Score.point} VS ${team2Score.point}
+      Thank you!
+      `
+    )
   }
 
   async teamOffenseStart(team, teamScore, inning, isTop) {
@@ -92,24 +103,21 @@ class GameController {
     while (!isNextPlayerTurn) {
       const result = this.game.throwBall(teamScore, player)
       isNextPlayerTurn = this.game.isNextPlayerTurn(teamScore, result)
+      isNextPlayerTurn && teamScore.resetPlayerScore()
       !this.skip && this.scoreboard.print(this.game.scores, playerNumber, isTop)
-      !this.skip && console.log(`\n${player.turn}번 ${player.name}입니다.\n`)
-      !this.skip && this.game.printResult(result)
-      //
-      const accResult = this.game.getAccBallAndStrikeResult(teamScore)
       !this.skip &&
-        accResult &&
-        console.log(this.game.resultToKorean(accResult))
-      //
-      accResult && this.game.processAfterRunPlayer(teamScore)
-      !this.skip && this.printScore(teamScore)
+        this.printThrowResult(player, result, isNextPlayerTurn, teamScore)
       !isNextPlayerTurn && !this.skip && (await this.askSkip(inningCount))
-      if (this.skip) {
-        break
-      }
     }
+  }
 
-    teamScore.resetPlayerScore()
+  // 투구 후 출력되는
+  printThrowResult(player, result, isNextPlayerTurn, teamScore) {
+    const accResult = this.game.getAccBallAndStrikeResult(teamScore)
+    console.log(`\n${player.turn}번 ${player.name}입니다.\n`)
+    this.game.printResult(result)
+    accResult && console.log(this.game.resultToKorean(accResult))
+    !this.skip && this.printScore(teamScore)
   }
 
   async askSkip(inningCount) {
