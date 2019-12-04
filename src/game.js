@@ -26,17 +26,17 @@ class BaseballGame {
     const result = this.getRandomResult()
     this.updateScore(result)
     const isNextPlayerTurn = this.isNextPlayerTurn(result)
+    const scoreResultString = this.getResultString(result, isNextPlayerTurn)
     if (isNextPlayerTurn || this.out === 3) {
       this.resetPrePlayerScore()
     }
-    const scoreResultString = this.getResultString(result, isNextPlayerTurn)
     this.printScore(scoreResultString)
   }
 
   isNextPlayerTurn(result) {
     return (
-      this.out < 3 && (
-        this.ball === 4 ||
+      this.out < 3 &&
+      (this.ball === 4 ||
         this.strike === 3 ||
         result === 'safety' ||
         result === 'out')
@@ -55,10 +55,10 @@ class BaseballGame {
   updateScore(result) {
     this[result]++
     if (this.strike === 3) {
-      this.out++;
+      this.out++
     }
     if (this.ball === 4) {
-      this.safety++;
+      this.safety++
     }
   }
 
@@ -68,12 +68,28 @@ class BaseballGame {
     if (isNextPlayerTurn && (result === 'safety' || result === 'out')) {
       resultScoreString += '다음 타자가 타석에 입장했습니다.'
     } else if (isNextPlayerTurn) {
-      resultScoreString += `\n${this.ball === 4 ? '안타' : '아웃'} ! 다음 타자가 타석에 입장했습니다.`
+      resultScoreString += this.getAccStrikeAndBallMsg()
     } else if (this.out === 3 && result !== 'out') {
       resultScoreString += '\n아웃 !'
     }
+    this.updateAccStrikeAndBall()
     resultScoreString += `\n${this.strike}S ${this.ball}B ${this.out}O`
-    return `\n${resultScoreString}\n`;
+    return `\n${resultScoreString}\n`
+  }
+
+  getAccStrikeAndBallMsg() {
+    return `\n${
+      this.ball === 4 ? '안타' : '아웃'
+    } ! 다음 타자가 타석에 입장했습니다.`
+  }
+
+  updateAccStrikeAndBall() {
+    if (this.strike === 3) {
+      this.strike = 0
+    }
+    if (this.ball === 4) {
+      this.ball = 0
+    }
   }
 
   printScore(scoreResult) {
