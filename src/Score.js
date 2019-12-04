@@ -34,15 +34,20 @@ class Score {
 
   updateScore(result) {
     this[result]++
+    if (result === 'safety') {
+      this.accSafety++
+    }
+  }
+
+  updateAccBallAndStrike() {
     if (this.strike === 3) {
       this.out++
       this.accStrikeout++
+      this.strike = 0
     }
     if (this.ball === 4) {
       this.safety++
-    }
-    if (result === 'safety') {
-      this.accSafety++
+      this.ball = 0
     }
   }
 
