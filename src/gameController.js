@@ -108,22 +108,22 @@ class GameController {
     let isNextPlayerTurn = false
     while (!isNextPlayerTurn) {
       const result = this.game.throwBall(teamScore, player)
+      const accResult = this.game.getAccBallAndStrikeResult(teamScore)
       isNextPlayerTurn = this.game.isNextPlayerTurn(teamScore, result)
+      accResult && teamScore.updateAccBallAndStrike()
       !this.skip && this.scoreboard.print(this.game.scores, playerNumber, isTop)
-      !this.skip && this.printThrowResult(player, result, teamScore)
+      !this.skip && this.printThrowResult(player, result, teamScore, accResult)
       isNextPlayerTurn && teamScore.resetPlayerScore()
       !isNextPlayerTurn && !this.skip && (await this.askSkip(inningCount))
     }
   }
 
   // 투구 결과 출력:투구 결과, 삼진아웃인지,볼 누적 안타인지 출력
-  printThrowResult(player, result, teamScore) {
-    const accResult = this.game.getAccBallAndStrikeResult(teamScore)
+  printThrowResult(player, result, teamScore, accResult) {
     console.log(`\n${player.turn}번 ${player.name}입니다.\n`)
     this.game.printResult(result)
     accResult && console.log(this.game.resultToKorean(accResult))
-    accResult && teamScore.updateAccBallAndStrike()
-    !this.skip && this.printScore(teamScore)
+    this.printScore(teamScore)
   }
 
   async askSkip(inningCount) {
