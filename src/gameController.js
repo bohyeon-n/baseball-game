@@ -16,10 +16,16 @@ class GameController {
     const isAbleMatchStart = this.game.isAbleMatchStart()
     const menu = this.getMenu(isAbleMatchStart)
     this.printMenu(menu)
-    const selectedMenu = await this.getSelectedMenu(isAbleMatchStart)
-    await this.onSelectMenu(selectedMenu)
-    if (selectedMenu === '1' || selectedMenu === '2') {
-      this.openMenu()
+    let selectMenu = false
+    while (!selectMenu) {
+      const selectedMenu = await this.getSelectedMenu(isAbleMatchStart)
+      if (selectedMenu) {
+        selectMenu = true
+      }
+      await this.onSelectMenu(selectedMenu)
+      if (selectedMenu === '1' || selectedMenu === '2') {
+        this.openMenu()
+      }
     }
   }
 
