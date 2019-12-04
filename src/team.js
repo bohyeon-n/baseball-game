@@ -29,6 +29,8 @@ class Team {
       )
       if (this.isValidName(input)) {
         teamName = input
+      } else {
+        console.log('잘못입력하셨습니다. 다시 입력해주세요.')
       }
     }
     return teamName
@@ -37,11 +39,17 @@ class Team {
   async getPlayerInput(turn) {
     let player
     while (!player) {
-      const playerInput = await this.input.question(`${turn}번 타자 정보 입력>`)
+      const playerInput = await this.input.question(
+        `${turn}번 타자 정보 입력(예: 김타자, 0.12)>`
+      )
       const splitedInput = playerInput.split(',').map(word => word.trim())
       const [name, battingAverage] = splitedInput
       if (this.isValidPlayerInput(name, Number(battingAverage))) {
         player = { name, battingAverage: Number(battingAverage) }
+      } else {
+        console.log(
+          `잘못 입력하셨습니다! 타율 h는 0.1 < h < 0.5이고 소수 세째 자리까지 입력할 수 있습니다.`
+        )
       }
     }
     return player

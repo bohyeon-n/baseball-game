@@ -1,17 +1,27 @@
 class BaseballGame {
-  constructor(team1, team2, team1Score, team2Score, userInput) {
+  constructor(team1, team2, team1Score, team2Score) {
     this.team1Score = team1Score
     this.team2Score = team2Score
     this.team1 = team1
     this.team2 = team2
-    this.userInput = userInput
-    this.inning = 1
-    this.offenseTeam = 1
+    this.scores = []
   }
 
   async setTeams() {
     await this.team1.setTeam()
     await this.team2.setTeam()
+    this.initScores()
+  }
+
+  initScores() {
+    const scores = []
+    for (let i = 0; i < 6; i++) {
+      scores.push({
+        team1Point: 0,
+        team2Point: 0
+      })
+    }
+    this.scores = scores
   }
 
   async printTeamsInfo() {
@@ -19,134 +29,41 @@ class BaseballGame {
     this.team2.printTeamInfo()
   }
 
-  getMenu(isAbleMathStart) {
-    let menu = `신나는 야구시합
-    1. 데이터 입력
-    2. 데이터 출력
-    `
-    if (isAbleMathStart) {
-      menu += `3. 시합하기
-      `
-    }
-    return menu
+  isAbleMatchStart() {
+    return this.team1.players && this.team2.players
   }
 
-  async onSelectMenu(selectedMenuNumber) {
-    switch (selectedMenuNumber) {
-      case '1':
-        await this.setTeams()
-        break
-      case '2':
-        this.printTeamsInfo()
-        break
-      case '3':
-        this.math()
-        break
-      default:
-        console.log('메뉴를 잘못 선택하셨습니다.')
+  getGameInfo() {
+    return {
+      team1: this.team1,
+      team2: this.team2,
+      team1Score: this.team1Score,
+      team2Score: this.team2Score
     }
   }
 
-  async PrintMenu(menu) {
-    console.log(menu)
+  throwBall(teamScore, player) {
+    const result = this.getRandomResult(player.battingAverage)
+    teamScore.updateScore(result)
+    teamScore.pitchCount++
+    return result
   }
 
-  async getSelectedMenu(isAbleMathStart) {
-    const selectMessage = isAbleMathStart
-      ? '메뉴선택(1 - 3)'
-      : '메뉴선택 (1 - 2)'
-    const selectedMenu = await this.userInput.question(selectMessage)
-    return this.isValidMenuNumber(selectedMenu, isAbleMathStart)
-      ? selectedMenu
-      : null
-  }
-
-  isValidMenuNumber(selectedMenu, isAbleMathStart) {
-    if (isAbleMathStart) {
-      return (
-        selectedMenu === '1' || selectedMenu === '2' || selectedMenu === '3'
-      )
+  updateScoreAfterInning(innging, isTop) {
+    if (isTop) {
+      this.scores[innging - 1].team1Point = this.team1Score.calcPoint()
+      this.team1Score.updateInningPoint()
+      this.team1Score.resetPreInningScore()
     } else {
-      return selectedMenu === '1' || selectedMenu === '2'
+      this.scores[innging - 1].team2Point = this.team2Score.calcPoint()
+      this.team2Score.updateInningPoint()
+      this.team2Score.resetPreInningScore()
     }
-  }
-
-  async openMenu() {
-    const isAbleMathStart = this.team1.players && this.team2.players
-    const menu = this.getMenu(isAbleMathStart)
-    this.PrintMenu(menu)
-    const selectedMenu = await this.getSelectedMenu(isAbleMathStart)
-    await this.onSelectMenu(selectedMenu)
-  }
-
-  async start() {
-    this.userInput.open()
-    let open = false
-    while (!open) {
-      await this.openMenu()
-    }
-  }
-
-  math() {
-    const matchStartMessage = `${this.team1.teamName} VS ${this.team2.teamName}의 시합을 시작합니다.`
-    console.log(matchStartMessage)
-    for (let i = 0; i < 9; i++) {
-      // 초 공격
-      this.offense(this.team1, this.team1Score, i + 1, 'top')
-      // 말 공격
-      this.offense(this.team2, this.team2Score, i + 1, 'bottom')
-      this.updateScoreAfterInning()
-    }
-    const matchResultString = `경기 종료 \n${this.getMathResultString()} \nThank you!`
-    console.log(matchResultString)
-  }
-
-  updateScoreAfterInning() {
-    this.team1Score.updateInningPoint()
-    this.team2Score.updateInningPoint()
-    this.team1Score.resetPreInningScore()
-    this.team2Score.resetPreInningScore()
   }
 
   getMathResultString() {
     return `${this.team1.teamName} VS ${this.team2.teamName}
     ${this.team1Score.point} : ${this.team2Score.point}`
-  }
-
-  // 팀 한 번 공격하기
-  offense(team, teamScore, inning, topOrBottom) {
-    let isChangeOffenseTeam = false
-    let playerNumber = 1
-    while (!isChangeOffenseTeam) {
-      console.log(
-        `${inning} ${topOrBottom === 'top' ? '초' : '말'} ${team.teamName} 공격`
-      )
-      while (!isChangeOffenseTeam) {
-        this.runPlayer(team.players[playerNumber - 1], teamScore)
-        playerNumber = this.getNextPlayer(team.players.length, playerNumber)
-        isChangeOffenseTeam = teamScore.out >= 3
-      }
-    }
-  }
-
-  getNextPlayer(playerCount, currentPlayer) {
-    return currentPlayer >= playerCount ? 1 : currentPlayer + 1
-  }
-
-  runPlayer(player, teamScore) {
-    console.log(`${player.turn}번 ${player.name}`)
-    let isNextPlayerTurn = false
-    while (!isNextPlayerTurn) {
-      const result = this.getRandomResult(player.battingAverage)
-      this.printResult(result)
-      teamScore.updateScore(result)
-      isNextPlayerTurn = this.isNextPlayerTurn(teamScore, result)
-      !isNextPlayerTurn && this.printScore(teamScore)
-    }
-    const accResult = this.getAccBallAndStrikeResult(teamScore)
-    accResult && console.log(this.resultToKorean(accResult))
-    teamScore.resetPrePlayerScore()
-    this.printScore(teamScore)
   }
 
   getAccBallAndStrikeResult(teamScore) {
@@ -171,16 +88,6 @@ class BaseballGame {
       result === 'safety' ||
       result === 'out'
     )
-  }
-
-  getScoreString(teamScore) {
-    return `${teamScore.strike}S ${teamScore.ball}B ${teamScore.out}O`
-  }
-
-  printScore(teamScore) {
-    const teamScoreString = this.getScoreString(teamScore)
-    console.log(`${teamScoreString}
-    `)
   }
 
   resultToKorean(result) {

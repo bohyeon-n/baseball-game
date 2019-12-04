@@ -5,6 +5,9 @@ class Score {
     this.out = 0
     this.safety = 0
     this.point = 0
+    this.accSafety = 0
+    this.accStrikeout = 0
+    this.pitchCount = 0
   }
 
   resetScore() {
@@ -15,7 +18,7 @@ class Score {
     this.point = 0
   }
 
-  resetPrePlayerScore() {
+  resetPlayerScore() {
     this.ball = 0
     this.strike = 0
   }
@@ -31,11 +34,20 @@ class Score {
 
   updateScore(result) {
     this[result]++
+    if (result === 'safety') {
+      this.accSafety++
+    }
+  }
+
+  updateAccBallAndStrike() {
     if (this.strike === 3) {
       this.out++
+      this.accStrikeout++
+      this.strike = 0
     }
     if (this.ball === 4) {
       this.safety++
+      this.ball = 0
     }
   }
 
